@@ -1,65 +1,65 @@
 item {
-  id: 0
+  id: 1
   name: 'bag'
 }
 
 item {
-  id: 1
+  id: 2
   name: 'belt'
 }
 
 item {
-  id: 2
+  id: 3
   name: 'boots'
 }
 
 item {
-  id: 3
+  id: 4
   name: 'footwear'
 }
 
 item {
-  id: 4
+  id: 5
   name: 'outer'
 }
 
 item {
-  id: 5
+  id: 6
   name: 'dress'
 }
 
 item {
-  id: 6
+  id: 7
   name: 'sunglasses'
 }
 
 item {
-  id: 7
+  id: 8
   name: 'pants'
 }
 
 item {
-  id: 8
+  id: 9
   name: 'top'
 }
 
 item {
-  id: 9
+  id: 10
   name: 'shorts'
 }
 
 item {
-  id: 10
+  id: 11
   name: 'skirt'
 }
 
 item {
-  id: 11
+  id: 12
   name: 'headwear'
 }
 
 item {
-  id: 12
+  id: 13
   name: 'scarf & tie'
 }
 
