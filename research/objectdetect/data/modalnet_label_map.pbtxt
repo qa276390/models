@@ -1,0 +1,65 @@
+item {
+  id: 0
+  name: 'bag'
+}
+
+item {
+  id: 1
+  name: 'belt'
+}
+
+item {
+  id: 2
+  name: 'boots'
+}
+
+item {
+  id: 3
+  name: 'footwear'
+}
+
+item {
+  id: 4
+  name: 'outer'
+}
+
+item {
+  id: 5
+  name: 'dress'
+}
+
+item {
+  id: 6
+  name: 'sunglasses'
+}
+
+item {
+  id: 7
+  name: 'pants'
+}
+
+item {
+  id: 8
+  name: 'top'
+}
+
+item {
+  id: 9
+  name: 'shorts'
+}
+
+item {
+  id: 10
+  name: 'skirt'
+}
+
+item {
+  id: 11
+  name: 'headwear'
+}
+
+item {
+  id: 12
+  name: 'scarf & tie'
+}
+
