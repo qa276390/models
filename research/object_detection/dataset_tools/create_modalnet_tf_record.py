@@ -59,16 +59,16 @@ flags.DEFINE_string('set', 'train', 'Convert training set, validation set or '
 flags.DEFINE_string('annotations_file', 'Annotations',
                     '(Relative) path to annotations directory.')
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
+flags.DEFINE_boolean('val', False, 'Valid or not')
 FLAGS = flags.FLAGS
 
 SETS = ['train', 'val', 'trainval', 'test']
 
-VAL = True
+VAL = FLAGS.val
 
 
 def read_anno(filepath):
     Image_list = []
-	idx = 0
     with open(filepath) as fp:
         line = fp.readline()
         while(line):
