@@ -96,8 +96,8 @@ def read_anno(filepath):
                     Ob = Object(feats[0], feats[1],
                                 feats[2], feats[3], feats[4])
                     IM.append(Ob)
-                Image_list.append(IM)
-                line = fp.readline()
+            Image_list.append(IM)
+            line = fp.readline()
     return Image_list
 
 
@@ -129,9 +129,10 @@ def dict_to_tf_example(data, dataset_directory):
             ymin.append(float(obj.ymin) / height)
             xmax.append(float(obj.xmax) / width)
             ymax.append(float(obj.ymax) / height)
-            classes.append(int(obj.label))
+            classes.append(int(obj.label)+1)
 
     #----------------------------wed-----------------------------------#
+    print(data.filename+" "+str(data.length))
 
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
