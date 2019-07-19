@@ -2,13 +2,16 @@ import numpy as np
 import tensorflow as tf
 import cv2 as cv
 import imutils
-#from utils import visualization_utils as vis_util
-#from utils import label_map_util
+from object_detection.utils import visualization_utils as vis_util
+from object_detection.utils import label_map_util
 
 model_path = "my_exported_graphs-231484/frozen_inference_graph.pb"
 pbtxt_path = "ModalNetDetect/data/modalnet_label_map.pbtxt"
 testimg = "test_img/1641094109.jpg"
 
+label_map = label_map_util.load_labelmap(pbtxt_path)
+categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=100, use_display_name=True)
+category_index = label_map_util.create_category_index(categories)
 # Read the graph.
 with tf.gfile.FastGFile(model_path, 'rb') as f:
     graph_def = tf.GraphDef()
@@ -35,8 +38,9 @@ with tf.Session() as sess:
 
     ######################### visualize ###########################
     
-    #vis_util.visualize_boxes_and_labels_on_image_array(inp, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True, line_thickness=4)
+    #vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=0.3)
     
+    vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(out[2]), np.squeeze(out[3]).astype(np.int32), np.squeeze(out[1]), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=0.3)
     
     
     ######################### #########  ###########################
@@ -44,7 +48,7 @@ with tf.Session() as sess:
 
 
 
-
+    """
     # Visualize detected bounding boxes.
     num_detections = int(out[0][0])
     print(num_detections)
@@ -60,7 +64,7 @@ with tf.Session() as sess:
             bottom = bbox[2] * rows
             cv.rectangle(img, (int(x), int(y)), (int(right), int(bottom)), (125, 255, 51), thickness=2)
             print(classId, "-->", score, x, y)
-        
+    """ 
 cv.imwrite('predict_result.jpg', img)
 #cv.imshow('SHOW', imutils.resize(img, width=800))
 #cv.waitKey()
