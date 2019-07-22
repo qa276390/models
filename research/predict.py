@@ -8,6 +8,8 @@ from object_detection.utils import visualization_utils as vis_util
 from object_detection.utils import label_map_util
 import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+ep = 1e-9
+ind2cat = { 1 : 'bags', 2 : 'accessories', 3 : 'shoes', 4 : 'shoes', 5 : 'outerwear', 6 : 'all-body', 7 : 'sunglasses', 8 : 'bottoms', 9 : 'tops', 10 : 'bottoms', 11: 'bottoms', 12 : 'hats', 13 : 'scarves'}
 class Bbox:
     def __init__(self, xmin, ymin, xmax, ymax, score, class_id):
         self.xmin = xmin
@@ -18,7 +20,7 @@ class Bbox:
         self.class_id = class_id
     def isSimilar(self, bbox):
         DUPTHR = 0.05
-        if(abs(bbox.xmin-self.xmin)/self.xmin < DUPTHR and abs(bbox.ymin-self.ymin)/self.ymin < DUPTHR and abs(bbox.xmax-self.xmax)/self.xmax < DUPTHR and abs(bbox.ymax-self.ymax)/self.ymax< DUPTHR):
+        if(abs(bbox.xmin-self.xmin)/(self.xmin + ep) < DUPTHR and abs(bbox.ymin-self.ymin)/(self.ymin + ep) < DUPTHR and abs(bbox.xmax-self.xmax)/self.xmax < DUPTHR and abs(bbox.ymax-self.ymax)/self.ymax< DUPTHR):
             return True
         elif(bbox.class_id==self.class_id):
             return True
@@ -40,9 +42,6 @@ def iscloth(ginfo):
     cl3 = ginfo.cl3
     cl4 = ginfo.cl4
     if(not cl1==23 and not cl1==42):
-        print('not cloth!')
-        print(cl1)
-        print(cl1==23)
         return False
     elif(cl1==23 and cl2==220 and cl3==4451):
         return False
@@ -104,7 +103,7 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
                         dup = True
                         break
                 if(dup or classId==2 or classId==7):
-                    print('invalid')
+                    #print('invalid')
                     continue
                 boxlist.append(bnow)
         valid_detections = len(boxlist)
@@ -132,7 +131,7 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
                     
                     imgcrop = img[int(y):int(ceil), int(x):int(right)]
                     img_save = cropped_dir +'/' + ginfo.gid+'_'+str(i+1)+'.jpg'
-                    print(img_save)
+                    print('saved: ' + img_save)
                     cv.imwrite(img_save, imgcrop)
                     print(classId, "-->", score, x, y)
                     boxlist.append(bnow)
@@ -144,7 +143,7 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
                         'title' : ginfo.desc,
                         'related' : [],
                         'category_id' : ginfo.cl1,
-                        'semantic_category' : category_index[classId]['name'],
+                        'semantic_category' : ind2cat[classId],
                         'category_id2' : ginfo.cl2,
                         'category_id3' : ginfo.cl3,
                         'category_id4' : ginfo.cl4 }
@@ -157,7 +156,7 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
         ######################### visualize ###########################
 
         #vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=0.3) 
-        vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(out[2]), np.squeeze(out[3]).astype(np.int32), np.squeeze(out[1]), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=THR)
+        #vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(out[2]), np.squeeze(out[3]).astype(np.int32), np.squeeze(out[1]), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=THR)
         
         
         ######################### #########  ###########################
@@ -172,9 +171,11 @@ def main():
     pbtxt_path = "ModalNetDetect/data/modalnet_label_map.pbtxt"
     #testimg = "test_img/1641094109.jpg"
     #testimg = "test_img/F6.jpg"
-    clothinfo_path = "test_img/cloth.data"
+    clothinfo_path = sys.argv[1]
+    #clothinfo_path = "/eds/research/bhsin/yahoo_clothes/clothes.data"
     img_dir = '/eds/research/bhsin/yahoo_clothes/img/'
-    outpath = './test411136_yahoo_cloth'
+    #outpath = './yahoo_cloth'
+    outpath = sys.argv[2]
     cropped_dir = os.path.join(outpath, 'cropped_img')
     outdata_path = os.path.join(outpath, 'set_data.json')
     outmeta_path = os.path.join(outpath, 'meta_data.json')
@@ -208,7 +209,7 @@ def main():
             cl1 = int(spline[-4])
             sep = ', '
             desc = sep.join(desclist).replace(' ', '_')
-            
+            """
             print('-'*50)
             print(gid)
             print(url)
@@ -217,7 +218,7 @@ def main():
             print(cl2)
             print(cl3)
             print(cl4)
-
+            """
             
             ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4)
             testimg = os.path.join(img_dir, gid+'.jpg')
