@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import tensorflow as tf
 import cv2 as cv
@@ -79,13 +80,15 @@ def draw_bbox_and_crop(testimg, graph_def, category_index):
 
         
     cv.imwrite('predict_result.jpg', img)
-
+import copy
+import codecs
 def main():
 
     model_path = "my_exported_graphs-231484/frozen_inference_graph.pb"
     pbtxt_path = "ModalNetDetect/data/modalnet_label_map.pbtxt"
     testimg = "test_img/1641094109.jpg"
     #testimg = "test_img/F6.jpg"
+    clothinfo_path = "test_img/cloth.data"
 
     label_map = label_map_util.load_labelmap(pbtxt_path)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=100, use_display_name=True)
@@ -94,7 +97,41 @@ def main():
     with tf.gfile.FastGFile(model_path, 'rb') as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
-    
+    #with open(clothinfo_path, 'r', encoding='utf-8') as fp:
+    with codecs.open(clothinfo_path, 'r', encoding='utf-8') as fp:
+        #line = fp.readline()
+        for line in fp:
+            print(fp.read())
+        """
+        while line:
+            #line = base64.b64decode(line)
+            #line = str(line)
+            cline = copy.deepcopy(line)
+            spline = cline.split()
+            n = len(spline)
+            if(n<=0):
+                break
+            gid = spline[0]
+            url = spline[1]
+            desclist = spline[2:-4]
+            cl4 = spline[-1] 
+            cl3 = spline[-2] 
+            cl2 = spline[-3] 
+            cl1 = spline[-4]
+            sep = ', '
+            desc = sep.join(desclist)
+
+            print(gid)
+            print(url)
+            print(desc)
+            print(cl1)
+            print(cl2)
+            print(cl3)
+            print(cl4)
+            print('-'*50)
+            line = fp.readline()
+        """
+    sys.exit(0)
     draw_bbox_and_crop(testimg, graph_def, category_index)
 
 if __name__ == "__main__":
