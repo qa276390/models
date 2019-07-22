@@ -17,7 +17,10 @@ class Bbox:
         self.score = score
         self.class_id = class_id
     def isSimilar(self, bbox):
-        if(abs(bbox.xmin-self.xmin)/self.xmin < 0.01 and abs(bbox.ymin-self.ymin)/self.ymin < 0.01 and abs(bbox.xmax-self.xmax)/self.xmax < 0.01 and abs(bbox.ymax-self.ymax)/self.ymax< 0.01):
+        DUPTHR = 0.05
+        if(abs(bbox.xmin-self.xmin)/self.xmin < DUPTHR and abs(bbox.ymin-self.ymin)/self.ymin < DUPTHR and abs(bbox.xmax-self.xmax)/self.xmax < DUPTHR and abs(bbox.ymax-self.ymax)/self.ymax< DUPTHR):
+            return True
+        elif(bbox.class_id==self.class_id):
             return True
         else:
             return False
@@ -31,7 +34,28 @@ class Ginfo:
         self.cl3 = cl3
         self.cl4 = cl4
 
-
+def iscloth(ginfo):
+    cl1 = ginfo.cl1
+    cl2 = ginfo.cl2
+    cl3 = ginfo.cl3
+    cl4 = ginfo.cl4
+    if(not cl1==23 and not cl1==42):
+        print('not cloth!')
+        print(cl1)
+        print(cl1==23)
+        return False
+    elif(cl1==23 and cl2==220 and cl3==4451):
+        return False
+    elif(cl1==23 and cl2==392 and cl3==6740):
+        return False
+    elif(cl1==23 and cl2==552 and cl3==13698):
+        return False
+    elif(cl1==23 and cl2==738 and cl3==13222 and cl4==123190):
+        return False
+    elif(cl1==23 and cl2==780 and (cl3==14719 or cl3==14720)):
+        return False
+    else:
+        return True
 
 
 THR = 0.33
@@ -94,6 +118,8 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
             for i in range(valid_detections):
                 tmpbox = boxlist[i]
                 classId = tmpbox.class_id
+                if (classId==3):
+                    classId = 4
                 score = tmpbox.score
                 #bbox = [float(v) for v in out[2][0][i]]
                 dup = False
@@ -105,13 +131,13 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
                     ceil = tmpbox.ymax
                     
                     imgcrop = img[int(y):int(ceil), int(x):int(right)]
-                    img_save = cropped_dir +'/' + ginfo.gid+'_'+str(i)+'.jpg'
+                    img_save = cropped_dir +'/' + ginfo.gid+'_'+str(i+1)+'.jpg'
                     print(img_save)
                     cv.imwrite(img_save, imgcrop)
                     print(classId, "-->", score, x, y)
                     boxlist.append(bnow)
                     #print(category_index)
-                    metadata[ginfo.gid+'_'+str(i)] = {
+                    metadata[ginfo.gid+'_'+str(i+1)] = {
                         'url_name' : ginfo.url,
                         'description' : ginfo.desc,
                         'categories' : [],
@@ -124,8 +150,8 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
                         'category_id4' : ginfo.cl4 }
                         
                     aset['items'].append({
-                        'item_id':ginfo.gid + '_' + str(i),
-                        'index' : str(i)
+                        'item_id':ginfo.gid + '_' + str(i+1),
+                        'index' : str(i+1)
                     }) 
             aset['set_id'] = ginfo.gid
         ######################### visualize ###########################
@@ -142,13 +168,13 @@ import copy
 import codecs
 def main():
 
-    model_path = "my_exported_graphs-231484/frozen_inference_graph.pb"
+    model_path = "my_exported_graphs-411163/frozen_inference_graph.pb"
     pbtxt_path = "ModalNetDetect/data/modalnet_label_map.pbtxt"
     #testimg = "test_img/1641094109.jpg"
     #testimg = "test_img/F6.jpg"
     clothinfo_path = "test_img/cloth.data"
     img_dir = '/eds/research/bhsin/yahoo_clothes/img/'
-    outpath = './test_yahoo_cloth'
+    outpath = './test411136_yahoo_cloth'
     cropped_dir = os.path.join(outpath, 'cropped_img')
     outdata_path = os.path.join(outpath, 'set_data.json')
     outmeta_path = os.path.join(outpath, 'meta_data.json')
@@ -176,13 +202,14 @@ def main():
             gid = spline[0]
             url = spline[1]
             desclist = spline[2:-4]
-            cl4 = spline[-1] 
-            cl3 = spline[-2] 
-            cl2 = spline[-3] 
-            cl1 = spline[-4]
+            cl4 = int(spline[-1]) 
+            cl3 = int(spline[-2]) 
+            cl2 = int(spline[-3])
+            cl1 = int(spline[-4])
             sep = ', '
             desc = sep.join(desclist).replace(' ', '_')
-            """
+            
+            print('-'*50)
             print(gid)
             print(url)
             print(desc)
@@ -190,10 +217,12 @@ def main():
             print(cl2)
             print(cl3)
             print(cl4)
-            print('-'*50)
-            """
+
+            
             ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4)
             testimg = os.path.join(img_dir, gid+'.jpg')
+            if(not iscloth(ginfo)):
+                continue
 
             valid = draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata)
             if(valid):
