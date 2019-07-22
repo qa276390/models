@@ -1,99 +1,15 @@
 {
-    "8276405_1": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/CC6AD829F9-SP-6774936.jpg",
-        "description": "DN,_都會時尚,_鉚釘點綴後跟真皮尖頭鞋-黑",
-        "categories": [],
-        "title": "DN,_都會時尚,_鉚釘點綴後跟真皮尖頭鞋-黑",
-        "related": [],
-        "category_id": "9",
-        "semantic_category": "outer",
-        "category_id2": "100",
-        "category_id3": "2954",
-        "category_id4": "117298"
-    },
-    "8276405_2": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/CC6AD829F9-SP-6774936.jpg",
-        "description": "DN,_都會時尚,_鉚釘點綴後跟真皮尖頭鞋-黑",
-        "categories": [],
-        "title": "DN,_都會時尚,_鉚釘點綴後跟真皮尖頭鞋-黑",
-        "related": [],
-        "category_id": "9",
-        "semantic_category": "dress",
-        "category_id2": "100",
-        "category_id3": "2954",
-        "category_id4": "117298"
-    },
-    "5519411_1": {
-        "url_name": "https://s.yimg.com/zp/images/D9E3E350D2FDD2274696C2377DC4BAA02716A74A",
-        "description": "拉拉熊悠閒貓生活系列毛絨公仔吊飾。小雞",
-        "categories": [],
-        "title": "拉拉熊悠閒貓生活系列毛絨公仔吊飾。小雞",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "outer",
-        "category_id2": "18",
-        "category_id3": "12582",
-        "category_id4": "105620"
-    },
-    "5519411_2": {
-        "url_name": "https://s.yimg.com/zp/images/D9E3E350D2FDD2274696C2377DC4BAA02716A74A",
-        "description": "拉拉熊悠閒貓生活系列毛絨公仔吊飾。小雞",
-        "categories": [],
-        "title": "拉拉熊悠閒貓生活系列毛絨公仔吊飾。小雞",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "dress",
-        "category_id2": "18",
-        "category_id3": "12582",
-        "category_id4": "105620"
-    },
-    "8294014_1": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/09DF6AEEF6-SP-6815983.jpg",
-        "description": "WHY,_AND,_1/2,_壓褶網紗洋裝,_5Y~10Y",
-        "categories": [],
-        "title": "WHY,_AND,_1/2,_壓褶網紗洋裝,_5Y~10Y",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "dress",
-        "category_id2": "459",
-        "category_id3": "12493",
-        "category_id4": "108073"
-    },
-    "8294014_2": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/09DF6AEEF6-SP-6815983.jpg",
-        "description": "WHY,_AND,_1/2,_壓褶網紗洋裝,_5Y~10Y",
-        "categories": [],
-        "title": "WHY,_AND,_1/2,_壓褶網紗洋裝,_5Y~10Y",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "bag",
-        "category_id2": "459",
-        "category_id3": "12493",
-        "category_id4": "108073"
-    },
-    "8294014_3": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/09DF6AEEF6-SP-6815983.jpg",
-        "description": "WHY,_AND,_1/2,_壓褶網紗洋裝,_5Y~10Y",
-        "categories": [],
-        "title": "WHY,_AND,_1/2,_壓褶網紗洋裝,_5Y~10Y",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "headwear",
-        "category_id2": "459",
-        "category_id3": "12493",
-        "category_id4": "108073"
-    },
     "8284967_1": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/165BC4E5F2-SP-6800252.jpg",
         "description": "【麥雪爾】純棉斑馬直條印花上衣",
         "categories": [],
         "title": "【麥雪爾】純棉斑馬直條印花上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "top",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     },
     "8284967_2": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/165BC4E5F2-SP-6800252.jpg",
@@ -101,11 +17,11 @@
         "categories": [],
         "title": "【麥雪爾】純棉斑馬直條印花上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "pants",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     },
     "8284959_1": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/C2FF40879B-SP-6800176.jpg",
@@ -113,11 +29,11 @@
         "categories": [],
         "title": "【麥雪爾】都會塗鴉印花網布拼接上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "top",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     },
     "8284959_2": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/C2FF40879B-SP-6800176.jpg",
@@ -125,11 +41,11 @@
         "categories": [],
         "title": "【麥雪爾】都會塗鴉印花網布拼接上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "headwear",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     },
     "8284959_3": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/C2FF40879B-SP-6800176.jpg",
@@ -137,95 +53,11 @@
         "categories": [],
         "title": "【麥雪爾】都會塗鴉印花網布拼接上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "pants",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
-    },
-    "8294123_1": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/BFAA6165B2-SP-6815880.jpg",
-        "description": "WHY,_AND,_1/2,_天絲棉牛仔背心洋裝,_5Y~10Y",
-        "categories": [],
-        "title": "WHY,_AND,_1/2,_天絲棉牛仔背心洋裝,_5Y~10Y",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "dress",
-        "category_id2": "459",
-        "category_id3": "13763",
-        "category_id4": "112694"
-    },
-    "8294123_2": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/BFAA6165B2-SP-6815880.jpg",
-        "description": "WHY,_AND,_1/2,_天絲棉牛仔背心洋裝,_5Y~10Y",
-        "categories": [],
-        "title": "WHY,_AND,_1/2,_天絲棉牛仔背心洋裝,_5Y~10Y",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "headwear",
-        "category_id2": "459",
-        "category_id3": "13763",
-        "category_id4": "112694"
-    },
-    "7585041_1": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/EBFA05F7E3-Product-20778759.jpg",
-        "description": "IN,_HOUSE-嬰兒麥管枕-大象飛飛",
-        "categories": [],
-        "title": "IN,_HOUSE-嬰兒麥管枕-大象飛飛",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "top",
-        "category_id2": "463",
-        "category_id3": "14829",
-        "category_id4": "67956"
-    },
-    "7585041_2": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/EBFA05F7E3-Product-20778759.jpg",
-        "description": "IN,_HOUSE-嬰兒麥管枕-大象飛飛",
-        "categories": [],
-        "title": "IN,_HOUSE-嬰兒麥管枕-大象飛飛",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "top",
-        "category_id2": "463",
-        "category_id3": "14829",
-        "category_id4": "67956"
-    },
-    "7585038_1": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/5D0FCAC40E-Product-20778751.jpg",
-        "description": "IN,_HOUSE-嬰兒麥管枕-動物園",
-        "categories": [],
-        "title": "IN,_HOUSE-嬰兒麥管枕-動物園",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "top",
-        "category_id2": "463",
-        "category_id3": "14829",
-        "category_id4": "67956"
-    },
-    "7585038_2": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/5D0FCAC40E-Product-20778751.jpg",
-        "description": "IN,_HOUSE-嬰兒麥管枕-動物園",
-        "categories": [],
-        "title": "IN,_HOUSE-嬰兒麥管枕-動物園",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "top",
-        "category_id2": "463",
-        "category_id3": "14829",
-        "category_id4": "67956"
-    },
-    "7585038_3": {
-        "url_name": "https://s.yimg.com/zp/MerchandiseImages/5D0FCAC40E-Product-20778751.jpg",
-        "description": "IN,_HOUSE-嬰兒麥管枕-動物園",
-        "categories": [],
-        "title": "IN,_HOUSE-嬰兒麥管枕-動物園",
-        "related": [],
-        "category_id": "38",
-        "semantic_category": "top",
-        "category_id2": "463",
-        "category_id3": "14829",
-        "category_id4": "67956"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     },
     "8284918_1": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/FB31A13808-SP-6800059.jpg",
@@ -233,11 +65,11 @@
         "categories": [],
         "title": "【麥雪爾】棉質幾何色塊蕾絲印花上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "top",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     },
     "8284918_2": {
         "url_name": "https://s.yimg.com/zp/MerchandiseImages/FB31A13808-SP-6800059.jpg",
@@ -245,10 +77,10 @@
         "categories": [],
         "title": "【麥雪爾】棉質幾何色塊蕾絲印花上衣",
         "related": [],
-        "category_id": "23",
+        "category_id": 23,
         "semantic_category": "pants",
-        "category_id2": "635",
-        "category_id3": "11043",
-        "category_id4": "86863"
+        "category_id2": 635,
+        "category_id3": 11043,
+        "category_id4": 86863
     }
 }
