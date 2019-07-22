@@ -152,7 +152,8 @@ def main():
     cropped_dir = os.path.join(outpath, 'cropped_img')
     outdata_path = os.path.join(outpath, 'set_data.json')
     outmeta_path = os.path.join(outpath, 'meta_data.json')
-    
+    if not os.path.exists(cropped_dir):
+        os.makedirs(cropped_dir) 
 
     label_map = label_map_util.load_labelmap(pbtxt_path)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=100, use_display_name=True)
