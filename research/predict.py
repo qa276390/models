@@ -60,7 +60,7 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
         boxlist = []
         # Visualize detected bounding boxes.
         num_detections = int(out[0][0])
-        print(num_detections)
+        #print(num_detections)
         valid = False
 
         #check
@@ -200,9 +200,10 @@ def main():
                 count+=1
             print('# of valid set: ' +str(count))
     with open(outdata_path, 'w', encoding = 'utf-8') as setfile:
-        json.dump(setdata, setfile)
+        json.dump(setdata, setfile, indent = 4)
     with open(outmeta_path, 'w', encoding = 'utf-8') as metafile:
-        json.dump(metadata, metafile)
+        json.dump(metadata, metafile, indent=4, ensure_ascii=False)
+        #metafile.write(unicode(d))
     
 if __name__ == "__main__":
     main()
