@@ -177,8 +177,8 @@ def main():
     #outpath = './yahoo_cloth'
     outpath = sys.argv[2]
     cropped_dir = os.path.join(outpath, 'cropped_img')
-    outdata_path = os.path.join(outpath, 'set_data.json')
-    outmeta_path = os.path.join(outpath, 'meta_data.json')
+    outdata_path = os.path.join(outpath, 'set_data')
+    outmeta_path = os.path.join(outpath, 'meta_data')
     if not os.path.exists(cropped_dir):
         os.makedirs(cropped_dir) 
 
@@ -229,10 +229,12 @@ def main():
             if(valid):
                 count+=1
             print('# of valid set: ' +str(count))
-    with open(outdata_path, 'w', encoding = 'utf-8') as setfile:
-        json.dump(setdata, setfile, indent = 4)
-    with open(outmeta_path, 'w', encoding = 'utf-8') as metafile:
-        json.dump(metadata, metafile, indent=4, ensure_ascii=False)
+            if(count % 1 == 0):
+                print('saving json file...')
+                with open(outdata_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as setfile:
+                    json.dump(setdata, setfile, indent = 4)
+                with open(outmeta_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as metafile:
+                    json.dump(metadata, metafile, indent=4, ensure_ascii=False)
         #metafile.write(unicode(d))
     
 if __name__ == "__main__":
