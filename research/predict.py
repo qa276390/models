@@ -72,13 +72,14 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
         inp = cv.resize(img, (300, 300))
         inp = inp[:, :, [2, 1, 0]]  # BGR2RGB
 
+        start_time = time.time()
         # Run the model
         out = sess.run([sess.graph.get_tensor_by_name('num_detections:0'),
                         sess.graph.get_tensor_by_name('detection_scores:0'),
                         sess.graph.get_tensor_by_name('detection_boxes:0'),
                         sess.graph.get_tensor_by_name('detection_classes:0')],
                        feed_dict={'image_tensor:0': inp.reshape(1, inp.shape[0], inp.shape[1], 3)})
-
+        print("model predict: --- %s seconds ---" % round(time.time() - start_time, 2))
 
         boxlist = []
         # Visualize detected bounding boxes.
@@ -229,12 +230,16 @@ def main():
             if(valid):
                 count+=1
             print('# of valid set: ' +str(count))
-            if(count % 1 == 0):
+            if(count % 1000 == 0):
                 print('saving json file...')
                 with open(outdata_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as setfile:
                     json.dump(setdata, setfile, indent = 4)
                 with open(outmeta_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as metafile:
                     json.dump(metadata, metafile, indent=4, ensure_ascii=False)
+        with open(outdata_path + ".json", 'w', encoding = 'utf-8') as setfile:
+            json.dump(setdata, setfile, indent = 4)
+        with open(outmeta_path + ".json", 'w', encoding = 'utf-8') as metafile:
+            json.dump(metadata, metafile, indent=4, ensure_ascii=False)
         #metafile.write(unicode(d))
     
 if __name__ == "__main__":
