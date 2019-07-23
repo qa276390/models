@@ -1,3 +1,4 @@
+import time
 import sys
 import json
 import numpy as np
@@ -58,11 +59,10 @@ def iscloth(ginfo):
 
 
 THR = 0.33
-def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata):
-    with tf.Session() as sess:
-        # Restore session
-        sess.graph.as_default()
-        tf.import_graph_def(graph_def, name='')
+def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata):
+    #with tf.Session() as sess:
+    if(True):
+
 
         # Read and preprocess an image.
         print('img_path:'+testimg)
@@ -80,7 +80,7 @@ def draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, s
                         sess.graph.get_tensor_by_name('detection_classes:0')],
                        feed_dict={'image_tensor:0': inp.reshape(1, inp.shape[0], inp.shape[1], 3)})
         print("model predict: --- %s seconds ---" % round(time.time() - start_time, 2))
-
+        #sess.close()
         boxlist = []
         # Visualize detected bounding boxes.
         num_detections = int(out[0][0])
@@ -194,53 +194,60 @@ def main():
     setdata = []
     metadata = {}
     count = 0
-    with codecs.open(clothinfo_path, 'r', encoding='utf-8') as fp:
-        for line in fp:
-            cline = copy.deepcopy(line)
-            spline = cline.split()
-            n = len(spline)
-            if(n<=0):
-                break
-            gid = spline[0]
-            url = spline[1]
-            desclist = spline[2:-4]
-            cl4 = int(spline[-1]) 
-            cl3 = int(spline[-2]) 
-            cl2 = int(spline[-3])
-            cl1 = int(spline[-4])
-            sep = ', '
-            desc = sep.join(desclist).replace(' ', '_')
-            """
-            print('-'*50)
-            print(gid)
-            print(url)
-            print(desc)
-            print(cl1)
-            print(cl2)
-            print(cl3)
-            print(cl4)
-            """
-            
-            ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4)
-            testimg = os.path.join(img_dir, gid+'.jpg')
-            if(not iscloth(ginfo)):
-                continue
+    
+    with tf.Session() as sess:
+        # Restore session
+        sess.graph.as_default()
+        tf.import_graph_def(graph_def, name='')
+        with codecs.open(clothinfo_path, 'r', encoding='utf-8') as fp:
+            for line in fp:
+                cline = copy.deepcopy(line)
+                spline = cline.split()
+                n = len(spline)
+                if(n<=0):
+                    break
+                gid = spline[0]
+                url = spline[1]
+                desclist = spline[2:-4]
+                cl4 = int(spline[-1]) 
+                cl3 = int(spline[-2]) 
+                cl2 = int(spline[-3])
+                cl1 = int(spline[-4])
+                sep = ', '
+                desc = sep.join(desclist).replace(' ', '_')
+                """
+                print('-'*50)
+                print(gid)
+                print(url)
+                print(desc)
+                print(cl1)
+                print(cl2)
+                print(cl3)
+                print(cl4)
+                """
+                
+                ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4)
+                testimg = os.path.join(img_dir, gid+'.jpg')
+                if(not iscloth(ginfo)):
+                    continue
 
-            valid = draw_bbox_and_crop(cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata)
-            if(valid):
-                count+=1
-            print('# of valid set: ' +str(count))
-            if(count % 1000 == 0):
-                print('saving json file...')
-                with open(outdata_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as setfile:
-                    json.dump(setdata, setfile, indent = 4)
-                with open(outmeta_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as metafile:
-                    json.dump(metadata, metafile, indent=4, ensure_ascii=False)
-        with open(outdata_path + ".json", 'w', encoding = 'utf-8') as setfile:
-            json.dump(setdata, setfile, indent = 4)
-        with open(outmeta_path + ".json", 'w', encoding = 'utf-8') as metafile:
-            json.dump(metadata, metafile, indent=4, ensure_ascii=False)
-        #metafile.write(unicode(d))
+                start_time = time.time()
+                valid = draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata)
+                print("draw and crop: --- %s seconds ---" % round(time.time() - start_time, 2))
+                
+                if(valid):
+                    count+=1
+                print('# of valid set: ' +str(count))
+                if(count % 1000 == 0):
+                    print('saving json file...')
+                    with open(outdata_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as setfile:
+                        json.dump(setdata, setfile, indent = 4)
+                    with open(outmeta_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as metafile:
+                        json.dump(metadata, metafile, indent=4, ensure_ascii=False)
+            with open(outdata_path + ".json", 'w', encoding = 'utf-8') as setfile:
+                json.dump(setdata, setfile, indent = 4)
+            with open(outmeta_path + ".json", 'w', encoding = 'utf-8') as metafile:
+                json.dump(metadata, metafile, indent=4, ensure_ascii=False) 
     
 if __name__ == "__main__":
     main()
