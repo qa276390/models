@@ -201,20 +201,25 @@ def main():
         tf.import_graph_def(graph_def, name='')
         with codecs.open(clothinfo_path, 'r', encoding='utf-8') as fp:
             for line in fp:
+                #print(line)
                 cline = copy.deepcopy(line)
                 spline = cline.split()
                 n = len(spline)
                 if(n<=0):
                     break
-                gid = spline[0]
-                url = spline[1]
-                desclist = spline[2:-4]
-                cl4 = int(spline[-1]) 
-                cl3 = int(spline[-2]) 
-                cl2 = int(spline[-3])
-                cl1 = int(spline[-4])
-                sep = ', '
-                desc = sep.join(desclist).replace(' ', '_')
+                try:
+                    gid = spline[0]
+                    url = spline[1]
+                    desclist = spline[2:-4]
+                    cl4 = int(spline[-1]) 
+                    cl3 = int(spline[-2]) 
+                    cl2 = int(spline[-3])
+                    cl1 = int(spline[-4])
+                    sep = ', '
+                    desc = sep.join(desclist).replace(' ', '_')
+                except:
+                    print('format error: skip this line')
+                    continue
                 """
                 print('-'*50)
                 print(gid)
@@ -224,7 +229,7 @@ def main():
                 print(cl2)
                 print(cl3)
                 print(cl4)
-                """
+                """ 
                 
                 ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4)
                 testimg = os.path.join(img_dir, gid+'.jpg')
