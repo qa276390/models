@@ -19,11 +19,14 @@ class Bbox:
         self.ymax = ymax
         self.score = score
         self.class_id = class_id
+        self.area = (xmax-xmin)*(ymax-ymin)
+        if(self.area<=0):
+            print('error: area <= 0')
     def isSimilar(self, bbox):
-        DUPTHR = 0.05
-        if(abs(bbox.xmin-self.xmin)/(self.xmin + ep) < DUPTHR and abs(bbox.ymin-self.ymin)/(self.ymin + ep) < DUPTHR and abs(bbox.xmax-self.xmax)/self.xmax < DUPTHR and abs(bbox.ymax-self.ymax)/self.ymax< DUPTHR):
+        if(bbox.class_id==self.class_id):
             return True
-        elif(bbox.class_id==self.class_id):
+        interarea = (min(self.xmax, bbox.xmax) - max(self.xmin, bbox.xmin)) * (min(self.ymax, bbox.ymax) - max(self.ymin, bbox.ymin))
+        if(interarea/self.area > 0.9 or interarea/bbox.area > 0.9):
             return True
         else:
             return False
@@ -67,11 +70,14 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
         # Read and preprocess an image.
         print('img_path:'+testimg)
         img = cv.imread(testimg)
-        rows = img.shape[0]
-        cols = img.shape[1]
-        inp = cv.resize(img, (300, 300))
-        inp = inp[:, :, [2, 1, 0]]  # BGR2RGB
-
+        try:
+            rows = img.shape[0]
+            cols = img.shape[1]
+            inp = cv.resize(img, (300, 300))
+            inp = inp[:, :, [2, 1, 0]]  # BGR2RGB
+        except:
+            print('imread error: not such file.')
+            return False
         start_time = time.time()
         # Run the model
         out = sess.run([sess.graph.get_tensor_by_name('num_detections:0'),
