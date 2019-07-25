@@ -61,7 +61,7 @@ def iscloth(ginfo):
         return True
 
 
-THR = 0.33
+THR = 0.40
 def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata):
     #with tf.Session() as sess:
     if(True):
@@ -99,6 +99,8 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
             score = float(out[1][0][i])
             bbox = [float(v) for v in out[2][0][i]]
             dup = False
+            if (classId==3):
+                classId = 4
             if score > THR:
                 x = bbox[1] * cols
                 y = bbox[0] * rows
@@ -109,7 +111,7 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
                     if(bnow.isSimilar(btmp)):
                         dup = True
                         break
-                if(dup or classId==2 or classId==7):
+                if(dup):
                     #print('invalid')
                     continue
                 boxlist.append(bnow)
@@ -124,8 +126,6 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
             for i in range(valid_detections):
                 tmpbox = boxlist[i]
                 classId = tmpbox.class_id
-                if (classId==3):
-                    classId = 4
                 score = tmpbox.score
                 #bbox = [float(v) for v in out[2][0][i]]
                 dup = False
@@ -135,8 +135,17 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
                     y = tmpbox.ymin
                     right = tmpbox.xmax
                     ceil = tmpbox.ymax
-                    
-                    imgcrop = img[int(y):int(ceil), int(x):int(right)]
+                    dy = ceil - y
+                    #tops or outer: cut 20% off from bottom of img
+                    if(classId==5 or classId==9):
+                        #imgcrop = img[int(y+0.2*dy):int(ceil), int(x):int(right)]
+                        imgcrop = img[int(y):int(ceil-0.2*dy), int(x):int(right)]
+                    #bottoms: cut 20% off from top of img
+                    elif(classId==8 or classId==10 or classId==11):
+                        #imgcrop = img[int(y):int(ceil-0.2*dy), int(x):int(right)]
+                        imgcrop = img[int(y+0.2*dy):int(ceil), int(x):int(right)]
+                    else:
+                        imgcrop = img[int(y):int(ceil), int(x):int(right)]
                     img_save = cropped_dir +'/' + ginfo.gid+'_'+str(i+1)+'.jpg'
                     print('saved: ' + img_save)
                     cv.imwrite(img_save, imgcrop)
@@ -153,7 +162,8 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
                         'semantic_category' : ind2cat[classId],
                         'category_id2' : ginfo.cl2,
                         'category_id3' : ginfo.cl3,
-                        'category_id4' : ginfo.cl4 }
+                        'category_id4' : ginfo.cl4,
+                        'score' : score }
                         
                     aset['items'].append({
                         'item_id':ginfo.gid + '_' + str(i+1),
