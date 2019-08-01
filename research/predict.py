@@ -30,6 +30,11 @@ class Bbox:
             return True
         else:
             return False
+    def isSmaller(self, bbox):
+        if(self.area<bbox.area):
+            return True
+        else:
+            return False
 class Ginfo:
     def __init__(self, gid, url, desc, cl1, cl2, cl3, cl4):
         self.gid = gid
@@ -61,11 +66,16 @@ def iscloth(ginfo):
         return True
 
 
-THR = 0.40
-def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata):
+
+def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata, main_part_only):
     #with tf.Session() as sess:
     if(True):
-
+        if(main_part_only):
+            THR = 0.50
+			dect_num = 0
+        else:
+            THR = 0.40
+			dect_num = 1
 
         # Read and preprocess an image.
         print('img_path:'+testimg)
@@ -108,9 +118,16 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
                 ceil = bbox[2] * rows
                 bnow = Bbox(x, y, right, ceil, score, classId)
                 for btmp in boxlist:
-                    if(bnow.isSimilar(btmp)):
-                        dup = True
-                        break
+                    if(main_part_only):
+                        if(bnow.isSmaller(btmp)):
+                            dup = True
+                            break
+                        else:
+                            boxlist.pop(0)
+                    else:
+                        if(bnow.isSimilar(btmp)):
+                            dup = True
+                            break
                 if(dup):
                     #print('invalid')
                     continue
@@ -118,7 +135,7 @@ def draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, gi
         valid_detections = len(boxlist)
         print('val detections:'+str(valid_detections))
 
-        if(valid_detections>1):
+        if(valid_detections>dect_num):
             valid = True
             aset = {}
             aset['items'] = []
@@ -193,6 +210,7 @@ def main():
     img_dir = '/eds/research/bhsin/yahoo_clothes/img/'
     #outpath = './yahoo_cloth'
     outpath = sys.argv[2]
+    main_part_only = (sys.argv[3]=='main_part_only')
     cropped_dir = os.path.join(outpath, 'cropped_img')
     outdata_path = os.path.join(outpath, 'set_data')
     outmeta_path = os.path.join(outpath, 'meta_data')
@@ -253,7 +271,7 @@ def main():
                     continue
 
                 start_time = time.time()
-                valid = draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata)
+                valid = draw_bbox_and_crop(sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata, main_part_only)
                 print("draw and crop: --- %s seconds ---" % round(time.time() - start_time, 2))
                 
                 if(valid):
