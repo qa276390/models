@@ -1,15 +1,21 @@
 # For Fashion Object Detection
+## Installation
+
+## Folder and Dataset
+
+## Training
 
 ## Prediction 
 
 ### Pair Detection
+We detect the object from the images, but only save the one which contains more than 1 object.
 ```bash
 sh Predict.sh 
 ```
 in Predict.sh,
 ```bash
-GD_LIST="Yahoo_Data/clean_gd_list.txt"
 #gid list with format "GID\tURL\tDESCRIPTION\tCLASS_1\tCLASS_2\tCLASS_3\tCLASS_4\t"
+GD_LIST="Yahoo_Data/clean_gd_list.txt"
 OUT_DIR="ex_output"
 MODEL_PATH="Yahoo_Data/my_exported_graphs-411163/frozen_inference_graph.pb" 
 PBTXT_PATH="./ModalNetDetect/data/modalnet_label_map.pbtxt"
@@ -22,7 +28,20 @@ time PYTHONIOENCODING=utf-8 python3 predict.py --info-path=$GD_LIST \
 					--img-dir=$IMG_DIR
 ```
 ### Multiple Objects
+We save all the objects.
+```bash
+sh Predict_All.sh
+```
+```bash
+time PYTHONIOENCODING=utf-8 python3 predict.py --prob-thr 0.6 --no-cut \
+	--info-path ./Yahoo_Data/clothes.data \
+	--output-path crop_all_tbdetect \
+	--img-dir /eds/research/bhsin/yahoo_clothes/clothes_full_image/ \
+	--crop-all \
+	--gid2class \
+	--gid2class-path ./Yahoo_Data/gid2class.csv \
 
+```
 
 
 
