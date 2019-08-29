@@ -16,7 +16,7 @@ from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser(description='prediction')
-parser.add_argument('--model-path', type=str, default="my_exported_graphs-411163/frozen_inference_graph.pb", help='model path')
+parser.add_argument('--model-path', type=str, default="./Yahoo_Data/my_exported_graphs-411163/frozen_inference_graph.pb", help='model path')
 parser.add_argument('--pbtxt-path', type=str, default="ModalNetDetect/data/modalnet_label_map.pbtxt", help='pbtxt path')
 parser.add_argument('--info-path', type=str, help='cloth info path')
 parser.add_argument('--file-list', action='store_true', default=False, help='info file has only file list')
