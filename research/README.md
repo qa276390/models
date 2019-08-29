@@ -50,6 +50,7 @@ We save all the objects.
 ```bash
 sh Predict_All.sh
 ```
+in Predict_All.sh,
 ```bash
 time PYTHONIOENCODING=utf-8 python3 predict.py --prob-thr 0.6 --no-cut \
 	--info-path ./Yahoo_Data/clothes.data \
