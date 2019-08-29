@@ -3,8 +3,12 @@
 ## Prediction 
 
 ### Pair Detection
-`sh Predict.sh Yahoo_Data/clean_gd_list.txt ex_output Yahoo_Data/my_exported_graphs-411163/frozen_inference_graph.pb ModalNetDetect/data/modalnet_label_map.pbtxt /eds/research/bhsin/yahoo_clothes/img/`
-
+```bash
+	sh Predict.sh Yahoo_Data/clean_gd_list.txt \ 
+	ex_output Yahoo_Data/my_exported_graphs-411163/frozen_inference_graph.pb \ 
+		ModalNetDetect/data/modalnet_label_map.pbtxt \
+			/eds/research/bhsin/yahoo_clothes/img/
+```
 ### Multiple Objects
 
 
