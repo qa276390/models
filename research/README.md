@@ -40,10 +40,10 @@ PBTXT_PATH="./ModalNetDetect/data/modalnet_label_map.pbtxt"
 IMG_DIR="/eds/research/bhsin/yahoo_clothes/img/"
 
 time PYTHONIOENCODING=utf-8 python3 predict.py --info-path=$GD_LIST \
-		--output-path=$OUT_DIR \
-			--model-path=$MODEL_PATH \
-				--pbtxt-path=$PBTXT_PATH \
-					--img-dir=$IMG_DIR
+	--output-path=$OUT_DIR \
+	--model-path=$MODEL_PATH \
+	--pbtxt-path=$PBTXT_PATH \
+	--img-dir=$IMG_DIR
 ```
 ### Multiple Objects
 We save all the objects.
