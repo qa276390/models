@@ -91,7 +91,7 @@ class Bbox:
     def isSimilar(self, bbox):
         if(bbox.class_id==self.class_id):
             return True
-        return isIntersect(self, bbox)
+        return self.isIntersect(bbox)
     def isIntersect(self, bbox):
         interarea = (min(self.xmax, bbox.xmax) - max(self.xmin, bbox.xmin)) * (min(self.ymax, bbox.ymax) - max(self.ymin, bbox.ymin))
         if(interarea/self.area > 0.9 or interarea/bbox.area > 0.9):
@@ -341,7 +341,8 @@ def main():
     label_map = label_map_util.load_labelmap(pbtxt_path)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=100, use_display_name=True)
     category_index = label_map_util.create_category_index(categories)
-    dfgid2class = pd.read_csv(gid2class_path)
+    if args.gid2class:
+        dfgid2class = pd.read_csv(gid2class_path)
     
     # Read the graph.
     with tf.gfile.FastGFile(model_path, 'rb') as f:
