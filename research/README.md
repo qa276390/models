@@ -13,7 +13,7 @@ To start installation please see <a href='object_detection/g3doc/installation.md
     │   └── gid2class.csv     		        # the mapping from gid to the class(category)
     ├── ModalNetDetect
     │   ├── data   
-    │	│   ├── modalnet_label_map.pbtxt        # the mapping from index to label
+    │   │   ├── modalnet_label_map.pbtxt        # the mapping from index to label
     │   └── models                		              
     ├── predict.py
     ├── Predict.sh
