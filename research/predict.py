@@ -1,15 +1,18 @@
 import time
+import copy
+import codecs
 import sys
 import json
 import numpy as np
 import tensorflow as tf
-import cv2 as cv
+import cv2 
 import imutils
 from object_detection.utils import visualization_utils as vis_util
 from object_detection.utils import label_map_util
 import os
 import argparse
 import pandas as pd
+from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser(description='prediction')
@@ -26,6 +29,7 @@ parser.add_argument('--prob-thr', type=float, default=0.5, help='img dir')
 
 parser.add_argument('--gid2class', action='store_true', default=False, help='do we have gid2class')
 parser.add_argument('--gid2class-path', type=str, help='gid2class path')
+parser.add_argument('--debug', action='store_true', default=False, help='show debug msg')
 
 
 
@@ -33,6 +37,46 @@ parser.add_argument('--gid2class-path', type=str, help='gid2class path')
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 ep = 1e-9
 ind2cat = { 1 : 'bags', 2 : 'accessories', 3 : 'shoes', 4 : 'shoes', 5 : 'outerwear', 6 : 'all-body', 7 : 'sunglasses', 8 : 'bottoms', 9 : 'tops', 10 : 'bottoms', 11: 'bottoms', 12 : 'hats', 13 : 'scarves'}
+cat2ind = {v: k for k, v in ind2cat.items()}
+fuzzind = { 'bags' : 1, 'accessories' : 2, 'shoes' : 3, 'outerwear' : 9, 'all-body' : 9, 'sunglasses' : 2, 'bottoms' : 8, 'tops' : 9, 'hats' : 12, 'scarves': 13} 
+def fcompare_issame(class1, class2):
+    return fuzzind[class1] == fuzzind[class2]
+
+#to detect if there is a table in our image
+class ImageTable(object):
+
+    def __init__(self, Image):
+        self.image = Image
+        self.gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+    def HorizontalLineDetect(self):
+        ret, thresh1 = cv2.threshold(self.gray, 240, 255, cv2.THRESH_BINARY)
+        blur = cv2.medianBlur(thresh1, 3)  # 
+        blur = cv2.medianBlur(blur, 3)  # 
+        h, w = self.gray.shape
+        horizontal_lines = []
+        for i in range(h - 1):
+            if abs(np.mean(blur[i, :]) - np.mean(blur[i + 1, :])) > 90:
+                horizontal_lines.append([0, i, w, i])
+                cv2.line(self.image, (0, i), (w, i), (0, 255, 0), 2)
+
+        horizontal_lines = horizontal_lines[1:]
+        return horizontal_lines
+    def VerticalLineDetect(self):
+        edges = cv2.Canny(self.gray, 30, 240)
+        minLineLength = 500
+        maxLineGap = 30
+        lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength, maxLineGap).tolist()
+        sorted_lines = sorted(lines, key=lambda x: x[0])
+
+        vertical_lines = []
+        for line in sorted_lines:
+            for x1, y1, x2, y2 in line:
+                if x1 == x2:
+                    vertical_lines.append((x1, y1, x2, y2))
+                    cv2.line(self.image, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
+        return vertical_lines
+
 class Bbox:
     def __init__(self, xmin, ymin, xmax, ymax, score, class_id):
         self.xmin = xmin
@@ -47,11 +91,14 @@ class Bbox:
     def isSimilar(self, bbox):
         if(bbox.class_id==self.class_id):
             return True
+        return isIntersect(self, bbox)
+    def isIntersect(self, bbox):
         interarea = (min(self.xmax, bbox.xmax) - max(self.xmin, bbox.xmin)) * (min(self.ymax, bbox.ymax) - max(self.ymin, bbox.ymin))
         if(interarea/self.area > 0.9 or interarea/bbox.area > 0.9):
             return True
         else:
             return False
+
     def isSmaller(self, bbox):
         if(self.area<bbox.area):
             return True
@@ -110,17 +157,20 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
             dect_num = 1
 
         # Read and preprocess an image.
-        print('img_path:'+testimg)
-        img = cv.imread(testimg)
+        if args.debug:
+            print('img_path:'+testimg)
+        img = cv2.imread(testimg)
         try:
             rows = img.shape[0]
             cols = img.shape[1]
-            inp = cv.resize(img, (300, 300))
+            inp = cv2.resize(img, (300, 300))
             inp = inp[:, :, [2, 1, 0]]  # BGR2RGB
         except:
-            print('imread error: not such file.')
+            if args.debug:
+                print('imread error: not such file.')
             return False
-        print('imread successed.')
+        if args.debug:
+            print('imread successed.')
         start_time = time.time()
         # Run the model
         out = sess.run([sess.graph.get_tensor_by_name('num_detections:0'),
@@ -128,7 +178,8 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
                         sess.graph.get_tensor_by_name('detection_boxes:0'),
                         sess.graph.get_tensor_by_name('detection_classes:0')],
                        feed_dict={'image_tensor:0': inp.reshape(1, inp.shape[0], inp.shape[1], 3)})
-        print("model predict: --- %s seconds ---" % round(time.time() - start_time, 2))
+        if args.debug:
+            print("model predict: --- %s seconds ---" % round(time.time() - start_time, 2))
         #sess.close()
         boxlist = []
         # Visualize detected bounding boxes.
@@ -151,13 +202,15 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
                 ceil = bbox[2] * rows
                 bnow = Bbox(x, y, right, ceil, score, classId)
                 
-                #check if the class match if we have gid2class
+                #check if the class match if we have gid2class                
                 if(args.gid2class):
                     detclass = ind2cat[bnow.class_id]
-                    #detection error, not the class
-                    if(not detclass == ginfo.clas):
+                    #if not the same class -> detection error, not the class
+                    if(not fcompare_issame(detclass, ginfo.clas)):
+                        if args.debug:
+                            print('detect class:', detclass) 
                         continue
-
+                
                 #check if dup
                 for btmp in boxlist:
                     if(main_part_only):
@@ -174,6 +227,11 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
                             break
                         else:
                             boxlist.pop(0)
+                    elif args.crop_all: 
+                        if bnow.isIntersect(btmp):
+                            dup = True
+                            break
+
                     else:
                         if(bnow.isSimilar(btmp)):
                             dup = True
@@ -185,7 +243,8 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
                     continue
                 boxlist.append(bnow)
         valid_detections = len(boxlist)
-        print('val detections:'+str(valid_detections))
+        if(args.debug):
+            print('val detections:'+str(valid_detections))
 
         if(valid_detections>dect_num):
             valid = True
@@ -217,15 +276,29 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
                     else:
                         imgcrop = img[int(y):int(ceil), int(x):int(right)]\
                     
+                    if args.crop_all:
+                        # Table Detection
+                        _img = copy.deepcopy(imgcrop)
+                        imageTBL = ImageTable(_img)
+                        hor = imageTBL.HorizontalLineDetect()
+                        ver = imageTBL.VerticalLineDetect()
+                        nline = len(hor)+len(ver)
+                        if nline >= 2:
+                            if(args.debug):
+                                print('Table Detected')
+                            continue
+                    
                     new_image_id = ginfo.gid+'_'+str(i+1)
 
                     if(args.crop_all):
                         new_image_id = ginfo.gid+'-'+str(indexofimage)+'_'+str(i+1)
 
                     img_save = os.path.join(cropped_dir, new_image_id+'.jpg')
-                    print('saved: ' + img_save)
-                    cv.imwrite(img_save, imgcrop)
-                    print(ind2cat[classId], "-->", score, x, y)
+
+                    cv2.imwrite(img_save, imgcrop)
+                    if args.debug:
+                        print(ind2cat[classId], "-->", score, x, y)
+                        print('saved: ' + img_save)
                     boxlist.append(bnow)
                     #print(category_index)
                     metadata[new_image_id] = {
@@ -246,18 +319,9 @@ def draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_ind
                         'index' : str(i+1)
                     }) 
             aset['set_id'] = ginfo.gid
-        ######################### visualize ###########################
-
-        #vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=0.3) 
-        #vis_util.visualize_boxes_and_labels_on_image_array(img, np.squeeze(out[2]), np.squeeze(out[3]).astype(np.int32), np.squeeze(out[1]), category_index, use_normalized_coordinates=True, line_thickness=4, min_score_thresh=THR)
-        
-        
-        ######################### #########  ###########################
 
     return valid    
-    #cv.imwrite('predict_result.jpg', img)
-import copy
-import codecs
+
 def main():
     args = parser.parse_args()
 
@@ -293,7 +357,7 @@ def main():
         sess.graph.as_default()
         tf.import_graph_def(graph_def, name='')
         with codecs.open(clothinfo_path, 'r', encoding='utf-8') as fp:
-            for line in fp:
+            for line in tqdm(fp):
                 #print(line)
                 cline = copy.deepcopy(line)
                 spline = cline.split()
@@ -320,28 +384,19 @@ def main():
                         sep = ', '
                         desc = sep.join(desclist).replace(' ', '_')
                 except:
-                    print('format error: skip this line')
+                    if args.debug:
+                        print('format error: skip this line')
                     continue
-                """
-                print('-'*50)
-                print(gid)
-                print(url)
-                print(desc)
-                print(cl1)
-                print(cl2)
-                print(cl3)
-                print(cl4)
-                """ 
                 
-
-                ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4, 0) #tmp
+                ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4, 0) #tmp Ginfo, just for iscloth
                 
                 if(iscloth(ginfo) and args.gid2class):
                     try:
                         clas = dfgid2class[dfgid2class.GD_ID==int(gid)].p_category.values[0]
                     except:
                         notfound+=1
-                        print('gid:'+gid+' not found in gid2class table')
+                        if args.debug:
+                            print('gid:'+gid+' not found in gid2class table')
                         ### continue to next gid
                         continue
                 else:
@@ -350,38 +405,44 @@ def main():
                 ginfo = Ginfo(gid, url, desc, cl1, cl2, cl3, cl4, clas)
                 if(args.file_list):
                     testimg = os.path.join(img_dir, gid)
-                else:
-                    testimg = os.path.join(img_dir, gid+'.jpg')
-                
                 #crop all                
-                if(args.crop_all):
+                elif(args.crop_all):
                     index = 0
                     testimg = os.path.join(img_dir, gid+'-'+str(index)+'.png')
                     try:
                         while(os.path.isfile(testimg)):
                             start_time = time.time()
                             valid = draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata, main_part_only, index)
-                            print("draw and crop: --- %s seconds ---" % round(time.time() - start_time, 2))
-                            testimg = os.path.join(img_dir, gid+'-'+str(index)+'.png')
+                            if(args.debug):
+                                print("draw and crop: --- %s seconds ---" % round(time.time() - start_time, 2))
                             index+=1
-                    except:
-                        print('path problem:',testimg)
-                if(not isfashion(ginfo)):
-                    continue
-                #is watch
-                if(cl1==25 and cl2==646 and cl3==11376 and cl4==125747):
-                    continue
-                if(not main_part_only and not iscloth(ginfo)):
-                    continue
+                            testimg = os.path.join(img_dir, gid+'-'+str(index)+'.png')
 
-                start_time = time.time()
-                valid = draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata, main_part_only, 0)
-                print("draw and crop: --- %s seconds ---" % round(time.time() - start_time, 2))
-                
-                if(valid):
-                    count+=1
-                print('# of valid set: ' +str(count))
+                            if(valid):
+                                count+=1
+                    except:
+                        if args.debug:
+                            print('path problem:',testimg)
+                else:
+                    testimg = os.path.join(img_dir, gid+'.jpg')
+                    if(not isfashion(ginfo)):
+                        continue
+                    #is watch
+                    if(cl1==25 and cl2==646 and cl3==11376 and cl4==125747):
+                        continue
+                    if(not main_part_only and not iscloth(ginfo)):
+                        continue
+
+                    start_time = time.time()
+                    valid = draw_bbox_and_crop(args, sess, cropped_dir, testimg, graph_def, category_index, ginfo, setdata, metadata, main_part_only, 0)
+                    if(args.debug):
+                        print("draw and crop: --- %s seconds ---" % round(time.time() - start_time, 2))
+                    
+                    if(valid):
+                        count+=1
+
                 if(count % 1000 == 0):
+                    print('# of valid set: ' +str(count))
                     print('saving json file...')
                     with open(outdata_path+ "-" + str(count) + ".json", 'w', encoding = 'utf-8') as setfile:
                         json.dump(setdata, setfile, indent = 4)
