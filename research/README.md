@@ -1,7 +1,7 @@
 # For Fashion Object Detection
 This project depends on <a href='object_detection'>Tensorflow Object Detection API</a><br>
 ## Installation
-To start installation please see <a href='g3doc/installation.md'>Installation</a><br>
+To start installation please see <a href='object_detection/g3doc/installation.md'>Installation</a><br> and my <a href='object_detection/g3doc/installation_Note.md'>Installation Note</a><br>
 
 ## Folder and Dataset
 
