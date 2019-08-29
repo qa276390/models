@@ -1,10 +1,26 @@
 # For Fashion Object Detection
 This project depends on <a href='object_detection'>Tensorflow Object Detection API</a><br>
 ## Installation
-To start installation please see <a href='object_detection/g3doc/installation.md'>Installation</a><br> and my <a href='object_detection/g3doc/installation_Note.md'>Installation Note</a><br>
+To start installation please see <a href='object_detection/g3doc/installation.md'>Installation</a><br> and also see my <a href='object_detection/g3doc/installation_Note.md'>Installation Note</a><br>
 
 ## Folder and Dataset
-
+    .				  		# tf-models/research/
+    ├── ...
+    ├── Yahoo_Data                    		
+    │   ├── my_exported_graph-411163		# exported model
+    │   ├── clean_gd_list.txt			# the gd list 
+    |   ├── clothes.data               	        # another gd list
+    │   └── gid2class.csv     		        # the mapping from gid to the class(category)
+    ├── ModalNetDetect
+    │   ├── data   
+    │	│   ├── modalnet_label_map.pbtxt        # the mapping from index to label
+    │   └── models                		              
+    ├── predict.py
+    ├── Predict.sh
+    ├── Predict_All.sh
+    ├── 
+    └── ...
+please copy Yahoo_Data from `/eds/research/2019_intern_data/Yahoo_Data` on rs1.
 ## Training
 
 ## Prediction 
