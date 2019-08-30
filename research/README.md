@@ -21,7 +21,6 @@ To start installation please see <a href='object_detection/g3doc/installation.md
     ├── 
     └── ...
 please copy Yahoo_Data from `/eds/research/2019_intern_data/Yahoo_Data` on rs1.
-## Training
 
 ## Prediction 
 
